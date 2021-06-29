@@ -41,7 +41,7 @@ def add_user():
 
     first_name = request.form['first-name']
     last_name = request.form['last-name']
-    image_url = request.form['image-url']
+    image_url = request.form['image-url'] or None
 
     user = User(first_name=first_name, last_name=last_name, image_url=image_url)
     db.session.add(user)

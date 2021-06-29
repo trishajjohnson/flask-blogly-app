@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<img class="profile-img" src="{{ user.image_url }}" alt="">
+<h1>{{ user.first_name }} {{ user.last_name }}</h1>
+<form action="/add-user">
+    <button>Edit</button>
+    <button>Delete</button>
+</form>
+<a href="/">Go back</a>
+
+{% endblock %}
