@@ -4,10 +4,10 @@
 
 <img class="profile-img" src="{{ user.image_url }}" alt="">
 <h1>{{ user.first_name }} {{ user.last_name }}</h1>
-<form action="/add-user">
-    <button>Edit</button>
-    <button>Delete</button>
+<form>
+    <button name="edit" formaction="/users/{{ user.id }}/edit" method="GET">Edit</button>
+    <button name="delete" formaction="/users/{{ user.id }}/edit" method="POST">Delete</button>
 </form>
-<a href="/">Go back</a>
+<a href="/users">Back</a>
 
 {% endblock %}

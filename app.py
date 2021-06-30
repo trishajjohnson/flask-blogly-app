@@ -8,6 +8,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
+app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
+
 connect_db(app)
 db.create_all()
 
@@ -15,27 +17,35 @@ from flask_debugtoolbar import DebugToolbarExtension
 app.config['SECRET_KEY'] = "SECRET!"
 debug = DebugToolbarExtension(app)
 
+
+
 @app.route("/")
 def show_homepage():
     """Shows homepage, welcome message and link to all users page"""
 
     return render_template("base.html")
 
-@app.route("/all-users")
+
+
+@app.route("/users")
 def list_all_users():
     """Lists all users, link to their details page and a 'Add User' button."""
 
     users = User.query.all()
 
-    return render_template("all_users.html", users=users)
+    return render_template("all-users.html", users=users)
 
-@app.route("/add-user")
+
+
+@app.route("/users/new")
 def list_users():
-    """Displays 'Add User' form."""
+    """Displays 'Create a User' form."""
 
-    return render_template("add_user.html")
+    return render_template("add-user.html")
 
-@app.route("/add-user", methods=["POST"])
+
+
+@app.route("/users/new", methods=["POST"])
 def add_user():
     """Add user and redirect to newly added user detail page."""
 
@@ -47,13 +57,47 @@ def add_user():
     db.session.add(user)
     db.session.commit()
 
-    return redirect(f"/{user.id}")
+    return redirect(f"/users/{user.id}")
 
-@app.route("/<int:user_id>")
-def show_pet(user_id):
-    """Show info on a single user."""
+
+
+@app.route("/users/<int:user_id>")
+def show_user_detail(user_id):
+    """Show detail on a single user."""
 
     user = User.query.get_or_404(user_id)
     return render_template("detail.html", user=user)
+
+
+
+@app.route("/users/<int:user_id>/edit")
+def show_edit_form(user_id):
+    """Show edit page for selected user."""
+
+    user = User.query.get_or_404(user_id)
+
+    return render_template("edit-user.html", user=user)
+
+
+
+@app.route("/users/<int:user_id>/edit", methods=["GET", "POST"])
+def edit_user(user_id):
+    """Submits changes for selected user and rediercts to that user's detail page."""
+
+    user = User.query.get_or_404(user_id)
+
+    if request.form.get["cancel"]:
+
+        return render_template("detail.html", user=user)
+
+    elif request.form.get["save"]:
+        
+        user.first_name = request.form["first-name"]
+        user.last_name = request.form["last-name"]
+        user.image_url = request.form["image-url"] or None
+
+        db.session.commit()
+
+        return redirect(f"/users/{user_id}")
 
     
