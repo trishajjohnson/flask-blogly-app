@@ -38,7 +38,7 @@ def list_all_users():
 
 
 @app.route("/users/new")
-def list_users():
+def new_user_form():
     """Displays 'Create a User' form."""
 
     return render_template("add-user.html")
@@ -80,24 +80,32 @@ def show_edit_form(user_id):
 
 
 
-@app.route("/users/<int:user_id>/edit", methods=["GET", "POST"])
+@app.route("/users/<int:user_id>/edit", methods=["POST"])
 def edit_user(user_id):
     """Submits changes for selected user and rediercts to that user's detail page."""
 
     user = User.query.get_or_404(user_id)
 
-    if request.form.get["cancel"]:
-
-        return render_template("detail.html", user=user)
-
-    elif request.form.get["save"]:
         
-        user.first_name = request.form["first-name"]
-        user.last_name = request.form["last-name"]
-        user.image_url = request.form["image-url"] or None
+    user.first_name = request.form["first-name"]
+    user.last_name = request.form["last-name"]
+    user.image_url = request.form["image-url"] or None
 
-        db.session.commit()
+    db.session.commit()
 
-        return redirect(f"/users/{user_id}")
+    return redirect("/users")
+
+
+
+@app.route("/users/<int:user_id>/delete", methods=["POST"])
+def delete_user(user_id):
+    """Deletes selected user and rediercts to the users page."""
+
+    user = User.query.get_or_404(user_id)
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return redirect("/users")
 
     

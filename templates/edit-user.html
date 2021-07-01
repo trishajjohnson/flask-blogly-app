@@ -3,13 +3,14 @@
 {% block content %}
 
 <img class="profile-img" src="{{ user.image_url }}" alt="">
-<h1>Edit User Profile</h1>
+<h2>Edit User Profile</h2>
 <form>
-    <p>First Name <input name="first-name" placeholder="{{ user.first_name }}"></p>
-    <p>Last Name  <input name="last-name" placeholder="{{ user.last_name }}"></p>
-    <p>Image URL <input name="image-url" placeholder="{{ user.image_url }}"></p>
-    <button name="cancel" formaction="/users/{{user.id}}/edit" method="GET">Cancel</button>
-    <button name="save" formaction="/users/{{user.id}}/edit" method="POST">Save</button>
+    <p>First Name <input name="first-name" value="{{ user.first_name }}"></p>
+    <p>Last Name  <input name="last-name" value="{{ user.last_name }}"></p>
+    <p>Image URL <input name="image-url" value="{{ user.image_url }}"></p>
+    <a href="/users/{{ user.id }}">Cancel</a>
+    <button formaction="/users/{{ user.id }}" formmethod="GET">Cancel</button>
+    <button formaction="/users/{{ user.id }}/edit" formmethod="POST">Save</button>
 </form>
   
 
