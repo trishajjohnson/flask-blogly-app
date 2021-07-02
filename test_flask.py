@@ -52,7 +52,7 @@ class UserViewsTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<h2>All Users</h2>', html)
-            self.assertIn(f'<li>Annie Clark <a href="users/{ self.user_id}">show details</a></li>', html)
+            self.assertIn(f'<li>Annie Clark  <a href="/users/{ self.user_id }">show details</a></li>', html)
 
     def test_new_user_form(self):
         """Tests /users/new route and that new user form is displayed"""
@@ -107,7 +107,7 @@ class PostViewsTestCase(TestCase):
         db.session.commit()
 
         self.user_id = user.id
-        self.post = post
+        self.post_id = post.id
 
     def tearDown(self):
         """Clear test DB of added test user."""
@@ -123,4 +123,38 @@ class PostViewsTestCase(TestCase):
             post = Post.query.get(1)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn(f'<li><a href="/users/{self.user_id}/posts/{ post.id }">{ post.title }</a></li>', html)
+            self.assertIn(f'{ post.title }', html)
+
+    def test_new_post_form(self):
+        """"Tests new post form displays correctly."""
+
+        with app.test_client() as client:
+            resp = client.get(f"/users/{ self.user_id }/posts/new")
+            html = resp.get_data(as_text=True)
+            post = Post.query.get(1)
+            user = User.query.get(self.user_id)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(f'<h2>Add Post for { user.first_name } { user.last_name }</h2>', html)
+
+    def test_view_post_detail(self):
+        """"Tests post detail view displays correctly."""
+
+        with app.test_client() as client:
+            resp = client.get(f"/users/{self.user_id}/posts/{self.post_id}")
+            html = resp.get_data(as_text=True)
+            post = Post.query.get(1)
+            user = User.query.get(self.user_id)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(f'<h2>{ post.title }</h2>', html)
+
+    def test_view_edit_post(self):
+        """"Tests edit post view displays correctly."""
+
+        with app.test_client() as client:
+            resp = client.get(f"/users/{self.user_id}/posts/{self.post_id}/edit")
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h2>Edit Post</h2>', html)
