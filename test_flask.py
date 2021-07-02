@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from app import app
-from models import db, User
+from models import db, User, Post
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///test_blogly'
 app.config['SQLALCHEMY_ECHO'] = True
@@ -10,17 +10,16 @@ app.config['TESTING'] = True
 
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
-db.drop_all()
-db.create_all()
 
 
 class UserViewsTestCase(TestCase):
     """Tests view functions for Users."""
 
     def setUp(self):
-        """Adds sample pet."""
+        """Adds sample user."""
 
-        User.query.delete()
+        db.drop_all()
+        db.create_all()
 
         user = User(first_name="Annie", last_name="Clark", image_url="https://www.rollingstone.com/wp-content/uploads/2018/06/rs-14399-20140212-stvincent-x1800-1392221859.jpg?resize=1800,1200&w=1800")
 
@@ -86,3 +85,42 @@ class UserViewsTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<h2>Edit User Profile</h2>', html)
             
+
+class PostViewsTestCase(TestCase):
+    """Tests view functions for Posts."""
+
+    def setUp(self):
+        """Drops, then adds tables, as well as create a sample user and post for testing."""
+
+        db.drop_all()
+        db.create_all()
+
+        user = User(first_name="Annie", last_name="Clark", image_url="https://www.rollingstone.com/wp-content/uploads/2018/06/rs-14399-20140212-stvincent-x1800-1392221859.jpg?resize=1800,1200&w=1800")
+
+        db.session.add(user)
+        db.session.commit()
+
+        post = Post(title="Post #1", content="This is the content of post #1.", user_id=1)
+        
+
+        db.session.add(post)
+        db.session.commit()
+
+        self.user_id = user.id
+        self.post = post
+
+    def tearDown(self):
+        """Clear test DB of added test user."""
+
+        db.session.rollback()
+
+    def test_post_on_user_page(self):
+        """Tests that posts are being listed on user's detail page."""
+
+        with app.test_client() as client:
+            resp = client.get(f"/users/{self.user_id}")
+            html = resp.get_data(as_text=True)
+            post = Post.query.get(1)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(f'<li><a href="/users/{self.user_id}/posts/{ post.id }">{ post.title }</a></li>', html)
