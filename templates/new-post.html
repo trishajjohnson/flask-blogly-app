@@ -6,6 +6,15 @@
 <form>
     <p>Title <input name="title"></p>
     <p>Content  <textarea name="content"></textarea></p>
+
+    <ul style="list-style: none;">
+    {% for tag in tags %}
+        <li>
+            <label for="{{ tag.id }}"><input type="checkbox" value="{{ tag.id }}" id="{{ tag.id }}"name="tags">  {{ tag.name }}</label>
+        </li>
+    {% endfor %}
+    </ul>
+    
     
     <button formaction="/users/{{ user.id }}" formmethod="GET">Cancel</button>
     <button formaction="/users/{{ user.id }}/posts/new" formmethod="POST">Add</button>

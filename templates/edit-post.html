@@ -8,8 +8,17 @@
     <p>Title <input name="title" value="{{ post.title }}"></p>
     <p>Content  <textarea name="content">{{ post.content }}</textarea></p>
     
-    <button formaction="/users/{{ user.id }}/posts/{{ post.id }}" formmethod="GET">Cancel</button>
-    <button formaction="/users/{{ user.id }}/posts/{{ post.id }}/edit" formmethod="POST">Save</button>
+    <ul style="list-style: none;">
+        {% for tag in tags %}
+            {% if tag in post.tags %}
+                <li><label for="{{ tag.id }}"><input type="checkbox" value="{{ tag.id }}" name="tags" checked>  {{ tag.name }}</label></li>
+            {% else %}
+            <li><label for="{{ tag.id }}"><input type="checkbox" value="{{ tag.id }}" name="tags">  {{ tag.name }}</label></li>
+            {% endif%}
+        {% endfor %}
+    </ul>
+    <button formaction="/posts/{{ post.id }}" formmethod="GET">Cancel</button>
+    <button formaction="/posts/{{ post.id }}/edit" formmethod="POST">Save</button>
 </form>
 
 {% endblock %}

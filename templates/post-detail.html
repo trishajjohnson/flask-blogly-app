@@ -5,10 +5,18 @@
 <h2>{{ post.title }}</h2>
 <p>{{ post.content }}</p>
 <p>By {{ user.first_name }} {{ user.last_name }}</p>
+{% if post.tags %}
+<p>
+    Tags:
+    {% for tag in post.tags %}
+    <a class="a_tag" href="/tags/{{ tag.id }}">{{ tag.name }}</a>
+    {% endfor %}
+</p>
+{% endif %}
 <form>
     
-    <button formaction="/users/{{ user.id }}/posts/{{ post.id }}/edit" formmethod="GET">Edit</button>
-    <button formaction="/users/{{ user.id }}/posts/{{ post.id }}/delete" formmethod="POST">Delete</button>
+    <button formaction="/posts/{{ post.id }}/edit" formmethod="GET">Edit</button>
+    <button formaction="/posts/{{ post.id }}/delete" formmethod="POST">Delete</button>
     
 </form>
 <a href="/users/{{ user.id }}">Back</a>
